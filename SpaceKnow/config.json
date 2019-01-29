@@ -2,8 +2,10 @@
   "bucketName": "",
   "credentialsFile": "",
   "projectName": "",
+  "start_date": "",
+  "end_date": "",
   "aoi": "",
   "tile": "",
-  "itemTypes": ["weekly"],
+  "itemTypes": ["daily"],
   "db": ""
 }
