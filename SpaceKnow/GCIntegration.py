@@ -126,6 +126,7 @@ if weekly_blobs_list:
                 raise 'fix the dates in the config file'
             
 
+
 # We should export this into a different rep in the future
 # Approximate radius of earth in meters
 Erad = 6373.0 * 1000
@@ -210,3 +211,4 @@ if daily_blobs_list:
                 parse_daily_to_mongo(detection_file, aoi, tile, day_date, file_timestamp, record_file)
             else:
                 raise 'fix the dates in the config file'
+
