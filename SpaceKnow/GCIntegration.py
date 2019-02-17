@@ -18,8 +18,12 @@ mongo_uri = config['db']
 aoi_id = config['aoi']
 tile_id = config['tile']
 item_types = config['itemTypes']
-start_date = datetime.strptime(config['start_date'], '%Y-%m-%dT%H:%M:%S.000Z')
-end_date = datetime.strptime(config['end_date'], '%Y-%m-%dT%H:%M:%S.000Z')
+start_date = config['start_date']
+end_date = config['end_date']
+if start_date:
+    start_date = datetime.strptime(start_date, '%Y-%m-%dT%H:%M:%S.000Z')
+if end_date:
+    end_date = datetime.strptime(end_date, '%Y-%m-%dT%H:%M:%S.000Z')
 
 scope_url = 'https://www.googleapis.com/auth/devstorage.full_control'
 
@@ -112,8 +116,15 @@ if weekly_blobs_list:
             record_blob = bucket.blob(record_file)
             record_file = json.loads(record_blob.download_as_string())
             wrunc_file = json.loads(blob.download_as_string())
-            if int(week_string) <= end_date.isocalendar()[1] and int(week_string) >= start_date.isocalendar()[1]:
+            date_week = date_string.split('T')[0]
+            if start_date and end_date:
+                if datetime.strptime(date_week, '%Y%m%d') <= end_date and datetime.strptime(date_week, '%Y%m%d') >= start_date:
+                    parse_weekly_wrunc_to_mongo(wrunc_file, aoi, tile, week_string, date_string, record_file)
+            elif not(start_date or end_date):
                 parse_weekly_wrunc_to_mongo(wrunc_file, aoi, tile, week_string, date_string, record_file)
+            else:
+                raise 'fix the dates in the config file'
+            
 
 
 # We should export this into a different rep in the future
@@ -163,7 +174,7 @@ def parse_daily_to_mongo(detection_file, aoi, tile, day_date_string, specific_da
         item['geometry'] = feature['geometry']
         item['originalImageId'] = original_image
         item['observed_start'] = features_date
-        item['observed_end'] = features_date
+        item['observed_end'] = features_date  
         item['area'] = feature['properties']['area']
 
         width, length = measurements(item['geometry']['coordinates'][0])
@@ -193,5 +204,11 @@ if daily_blobs_list:
             record_blob = bucket.blob(record_file)
             record_file = json.loads(record_blob.download_as_string())
             detection_file = json.loads(blob.download_as_string())
-            if datetime.strptime(day_date, '%Y%m%d') <= end_date and datetime.strptime(day_date, '%Y%m%d') >= start_date:
+            if start_date and end_date:
+                if datetime.strptime(day_date, '%Y%m%d') <= end_date and datetime.strptime(day_date, '%Y%m%d') >= start_date:
+                    parse_daily_to_mongo(detection_file, aoi, tile, day_date, file_timestamp, record_file)
+            elif not(start_date or end_date):
                 parse_daily_to_mongo(detection_file, aoi, tile, day_date, file_timestamp, record_file)
+            else:
+                raise 'fix the dates in the config file'
+
