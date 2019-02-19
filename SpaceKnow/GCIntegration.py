@@ -102,7 +102,7 @@ def parse_weekly_wrunc_to_mongo(wrunc_file, aoi, tile, week_string, date_string,
             else:
                 print("didn't pass verification- {}\nItem is {}".format(is_valid, item))
         else:
-            is_valid = analona.Building(item).validate() 
+            is_valid = analona.Vegetation(item).validate() 
             if is_valid == True:
                 vegetation_collection.replace_one({ '_id': item['_id'] }, item, upsert = True)
             else:
